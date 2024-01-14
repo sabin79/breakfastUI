@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:foodui/models/category_model.dart';
+import 'package:foodui/models/deit_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,14 +11,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<CategoryModel> categories = [];
+  List<DietModel> diets = [];
 
-  void _getCategories() {
+  void _getInitInfo() {
     categories = CategoryModel.getCategories();
+    diets = DietModel.getDiets();
   }
 
   @override
   Widget build(BuildContext context) {
-    _getCategories();
+    _getInitInfo();
     return Scaffold(
       appBar: appBar(),
       backgroundColor: Colors.white,
@@ -28,9 +31,99 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(
             height: 30,
           ),
-          _categoriesSection()
+          _categoriesSection(),
+          const SizedBox(
+            height: 30,
+          ),
+          _dietSection()
         ],
       ),
+    );
+  }
+
+  Column _dietSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Text(
+            'Recomendation \n for Diet',
+            style: TextStyle(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(
+          height: 15,
+        ),
+        SizedBox(
+          height: 240,
+          child: ListView.separated(
+            itemBuilder: (context, index) {
+              return Container(
+                width: 210,
+                decoration: BoxDecoration(
+                  color: diets[index].boxColor.withOpacity(0.35),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(children: [
+                  SvgPicture.asset(diets[index].iconPath),
+                  Text(
+                    diets[index].name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  Text(
+                    '${diets[index].level}|${diets[index].duration}|${diets[index].calorie}',
+                    style: TextStyle(
+                        color: diets[index].viewIsSelected
+                            ? Colors.white
+                            : const Color(0xff7B6F72),
+                        fontWeight: FontWeight.w400,
+                        fontSize: 13),
+                  ),
+                  Container(
+                      height: 45,
+                      width: 130,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            diets[index].viewIsSelected
+                                ? const Color(0xff9dceff)
+                                : Colors.transparent,
+                            diets[index].viewIsSelected
+                                ? const Color(0xff92a3fd)
+                                : Colors.transparent
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'View',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15),
+                        ),
+                      ))
+                ]),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(
+              width: 20,
+            ),
+            itemCount: diets.length,
+            scrollDirection: Axis.horizontal,
+          ),
+        )
+      ],
     );
   }
 
